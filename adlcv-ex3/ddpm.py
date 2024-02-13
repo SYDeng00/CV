@@ -46,7 +46,7 @@ class Diffusion:
         sqrt_alpha_bar =  torch.sqrt(self.alphas_bar[t]) # HINT: use torch.sqrt to calculate the sqrt of alphas_bar at timestep t
         sqrt_alpha_bar = sqrt_alpha_bar[:, None, None, None] # match image dimensions
 
-        sqrt_one_minus_alpha_bar = torch.sqrt(self.alphas_bar[t]) # HINT: calculate the sqrt of 1 - alphas_bar at time step t
+        sqrt_one_minus_alpha_bar = torch.sqrt(1. - self.alphas_bar[t]) # HINT: calculate the sqrt of 1 - alphas_bar at time step t
         sqrt_one_minus_alpha_bar = sqrt_one_minus_alpha_bar[:, None, None, None]# match image dimensions
         
         noise = torch.randn_like(x).to(self.device) # HINT: sample noise from a normal distribution. It should match the shape of x 
@@ -66,7 +66,7 @@ class Diffusion:
 
         # TASK 3 : Implement the revese process
         predicted_noise = model(x_t,t) # HINT: use model to predict noise
-        mean =  (x_t / alpha + beta * predicted_noise) / (1 + beta) # HINT: calculate the mean of the distribution p(x_{t-1} | x_t). See Eq. 11 in the ddpm paper at page 4
+        mean = (x_t - beta * predicted_noise) / torch.sqrt(alpha) # HINT: calculate the mean of the distribution p(x_{t-1} | x_t). See Eq. 11 in the ddpm paper at page 4
         std = torch.sqrt(beta)
 
         return mean, std
@@ -80,15 +80,12 @@ class Diffusion:
         
         # HINT: Having calculate the mean and std of p(x{x_t} | x_t), we sample noise from a normal distribution.
         # see line 3 of the Algorithm 2 (Sampling) at page 4 of the ddpm paper.
-        noise = torch.randn_like(x_t) * std + mean
-
         # x_t_prev = ... # Calculate x_{t-1}, see line 4 of the Algorithm 2 (Sampling) at page 4 of the ddpm paper.
-        alpha = self.alphas[t][:, None, None, None]
-        alpha_bar = self.alphas_bar[t][:, None, None, None]
-        beta = self.betas[t][:, None, None, None]
-
-        x_t_prev = (x_t - (1 - alpha_bar) / alpha * noise) / beta
+        noise = torch.randn_like(x_t)
+        
+        x_t_prev = mean + std * noise
         return x_t_prev
+
 
 
     def p_sample_loop(self, model, batch_size, timesteps_to_save=None):
