@@ -103,6 +103,7 @@ def train(device='cpu', T=500, img_size=16, input_channels=3, channels=32, time_
 
 
 def main():
+    os.environ["CUDA_VISIBLE_DEVICES"]= str(0)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
     print(f"Model will run on {device}")
     set_seed(seed=SEED)
