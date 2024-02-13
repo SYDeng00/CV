@@ -106,7 +106,7 @@ def main():
     os.environ["CUDA_VISIBLE_DEVICES"]= str(0)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
     print(f"Model will run on {device}")
-    set_seed(seed=SEED)
+    set_seed(seed=1)
     train(device=device)
 
 if __name__ == '__main__':
