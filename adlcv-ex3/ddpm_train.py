@@ -58,7 +58,7 @@ def create_result_folders(experiment_name):
     os.makedirs(os.path.join("models", experiment_name), exist_ok=True)
     os.makedirs(os.path.join("results", experiment_name), exist_ok=True)
 
-def train(device='cpu', T=500, img_size=16, input_channels=3, channels=32, time_dim=256,
+def train(device='cuda', T=500, img_size=16, input_channels=3, channels=32, time_dim=256,
           batch_size=100, lr=1e-3, num_epochs=30, experiment_name="ddpm", show=False):
     """Implements algrorithm 1 (Training) from the ddpm paper at page 4"""
     create_result_folders(experiment_name)
@@ -106,7 +106,7 @@ def main():
     os.environ["CUDA_VISIBLE_DEVICES"]= str(0)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
     print(f"Model will run on {device}")
-    set_seed(seed=1)
+    set_seed(seed=SEED)
     train(device=device)
 
 if __name__ == '__main__':
