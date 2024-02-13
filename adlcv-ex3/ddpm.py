@@ -65,7 +65,7 @@ class Diffusion:
         beta = self.betas[t][:, None, None, None] # match image dimensions
 
         # TASK 3 : Implement the revese process
-        predicted_noise = model(x_t) # HINT: use model to predict noise
+        predicted_noise = model(x_t,t) # HINT: use model to predict noise
         mean =  (x_t / alpha + beta * predicted_noise) / (1 + beta) # HINT: calculate the mean of the distribution p(x_{t-1} | x_t). See Eq. 11 in the ddpm paper at page 4
         std = torch.sqrt(beta)
 
