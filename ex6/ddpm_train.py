@@ -84,12 +84,14 @@ def train(T=500, cfg=True, img_size=16, input_channels=3, channels=32,
             # Do not forget randomly discard labels
             p_uncod = 0.1
 
-            ...
+            labels_dsc = torch.rand(labels.shape[0]) < p_uncod
 
-            t = ...
-            x_t, noise = ...
-            predicted_noise = ...
-            loss = ...
+            labels[labels_dsc] = 0
+
+            t = diffusion.sample_timesteps(images.shape[0]).to(device)
+            x_t, noise = diffusion.q_sample(images,t)
+            predicted_noise = model(x_t, t,labels) 
+            loss = mse(noise, predicted_noise)
 
             optimizer.zero_grad()
             loss.backward()
