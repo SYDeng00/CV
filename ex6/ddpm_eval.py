@@ -2,7 +2,8 @@ import os
 import matplotlib.pyplot as plt
 from scipy import linalg
 from tqdm import tqdm
-
+import numpy as np
+from scipy.linalg import sqrtm
 # torch
 import torch
 import torch.nn as nn
@@ -48,14 +49,40 @@ def feature_statistics(features):
     sigma = np.cov(features, rowvar=False)
     return mu, sigma
 
+# def frechet_distance(mu1, sigma1, mu2, sigma2):
+#     # https://en.wikipedia.org/wiki/Fr%C3%A9chet_distance
+#     # HINT: https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.sqrtm.html
+#     # Implement FID score
+
+#     fid = (mu1-mu2)**2 + np.trace(sigma1 + sigma2 - 2*linalg.sqrtm(sigma1@sigma2))
+
+#     return fid
+
+
 def frechet_distance(mu1, sigma1, mu2, sigma2):
-    # https://en.wikipedia.org/wiki/Fr%C3%A9chet_distance
-    # HINT: https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.sqrtm.html
-    # Implement FID score
+    """
+    Calculate the Fréchet Distance between two multivariate Gaussians.
+    :param mu1: numpy.ndarray, the mean of the first Gaussian.
+    :param sigma1: numpy.ndarray, the covariance matrix of the first Gaussian.
+    :param mu2: numpy.ndarray, the mean of the second Gaussian.
+    :param sigma2: numpy.ndarray, the covariance matrix of the second Gaussian.
+    :return: float, the Fréchet Distance.
+    """
+    # Compute the squared difference of the means
+    diff = mu1 - mu2
+    sq_diff = np.dot(diff, diff)
 
-    fid = (mu1-mu2)**2 + np.trace(sigma1 + sigma2 - 2*linalg.sqrtm(sigma1@sigma2))
+    # Compute the square root of the product of the covariances
+    covmean = sqrtm(sigma1.dot(sigma2))
+    
+    # Check for imaginary numbers (due to numerical instabilities) and take only the real part
+    if np.iscomplexobj(covmean):
+        covmean = covmean.real
 
+    # Compute the Fréchet Distance
+    fid = sq_diff + np.trace(sigma1) + np.trace(sigma2) - 2 * np.trace(covmean)
     return fid
+
 
 if __name__ == '__main__':
     set_seed()
