@@ -73,7 +73,7 @@ NOTE: if the rendering requires too much GPU memory, reduce it to 50 or 100.
 The results will not be that good.
 """
 # TARGET_SIZE = 300
-TARGET_SIZE = 100
+TARGET_SIZE = 300
 ######################################## visualize scene #######################################
 images, poses, render_poses, hwf, _ = load_blender_data(para['datadir'], resize=True, target_size=TARGET_SIZE)
 height, width, focal = hwf
