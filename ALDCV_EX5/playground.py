@@ -64,7 +64,7 @@ def make_video(images, title='Sparse poses', save_path=None):
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'The code will run on {device}')
 
-scene_name = 'lego' # IMPORTANT: dont change the scene name! You can change it in the training script.
+scene_name = 'chair' # IMPORTANT: dont change the scene name! You can change it in the training script.
 para = yaml.load(Path(f'config/{scene_name}.yaml').read_text(), Loader=yaml.FullLoader)
 os.makedirs(f'assets/{scene_name}', exist_ok=True)
 
