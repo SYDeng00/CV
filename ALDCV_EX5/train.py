@@ -15,6 +15,7 @@ from model import NeRF, Embedder
 from nerf_helpers import get_rays, nerf_forward, crop_center, render_video
 from load_blender import load_blender_data
 
+import torch.nn.functional as F
 
 def prepare_data(datadir, target_size):
     images, poses, render_poses, hwf, i_split = load_blender_data(datadir, target_size=target_size)
@@ -107,11 +108,17 @@ def main(scene_name):
         )
 
         rgb_predicted = outputs['rgb_map']
+        # # TASK 5: training loop
+        # loss = ... #HINT: MSE betweein rgb_predicted and target_img 
+        # ... #HINT: zero gradient
+        # ... #HINT: loss backward
+        # ... #HINT optimizer step
+
         # TASK 5: training loop
-        loss = ... #HINT: MSE betweein rgb_predicted and target_img 
-        ... #HINT: zero gradient
-        ... #HINT: loss backward
-        ... #HINT optimizer step
+        loss = F.mse_loss(rgb_predicted, target_img)  # Calculate MSE loss
+        optimizer.zero_grad()  # Zero gradients
+        loss.backward()  # Backward pass
+        optimizer.step()  # Update model parameters
 
         psnr = -10. * torch.log10(loss)
         pbar.set_postfix(MSE=loss.item(), PSNR=psnr.item())
