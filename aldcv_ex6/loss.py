@@ -33,25 +33,47 @@ class VFILoss(nn.Module):
         self.l2_loss = nn.MSELoss()
 
 
+    # def forward(self, input, target):
+    #     """
+    #     Input is the prediction (output of the model)
+    #     Target is the target image.
+    #     """
+    #     total_loss = 0
+    #     for loss_func, weight in self.losses_dict.items():
+    #         if loss_func == 'rec_loss': # Reconstruction loss
+    #             tmp_loss = None # TASK 3
+
+    #         elif loss_func == 'bidir_rec_loss': # Bidirectional reconstruction loss
+    #             tmp_loss = None # TASK 4
+
+    #         elif loss_func == 'feature_loss': # Feature Loss
+    #             tmp_loss = None # TASK 5
+
+
+    #         else:
+    #             raise AttributeError('Unknown loss: "' + loss_func + '"')
+    #         total_loss += weight* tmp_loss
+            # return total_loss
+
     def forward(self, input, target):
-        """
-        Input is the prediction (output of the model)
-        Target is the target image.
-        """
         total_loss = 0
+        vgg_input_features = self.vgg(input)
+        vgg_target_features = self.vgg(target)
+
         for loss_func, weight in self.losses_dict.items():
-            if loss_func == 'rec_loss': # Reconstruction loss
-                tmp_loss = None # TASK 3
+            if loss_func == 'rec_loss':  # Reconstruction loss
+                tmp_loss = self.l1_loss(input, target)
 
-            elif loss_func == 'bidir_rec_loss': # Bidirectional reconstruction loss
-                tmp_loss = None # TASK 4
+            elif loss_func == 'bidir_rec_loss':  # Bidirectional reconstruction loss
+                # This is placeholder code; the actual implementation would depend on how the bidirectional loss is defined
+                tmp_loss = self.l1_loss(input, target)  # This should be the bidirectional loss computation
 
-            elif loss_func == 'feature_loss': # Feature Loss
-                tmp_loss = None # TASK 5
-
+            elif loss_func == 'feature_loss':  # Feature Loss
+                tmp_loss = self.l2_loss(vgg_input_features, vgg_target_features)
 
             else:
                 raise AttributeError('Unknown loss: "' + loss_func + '"')
-            total_loss += weight* tmp_loss
-        
+            total_loss += weight * tmp_loss
+
+
         return total_loss
